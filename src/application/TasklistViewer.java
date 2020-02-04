@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
@@ -13,7 +14,11 @@ public class TasklistViewer extends Application {
 	
 	public static final String APP_DIR_PATH = System.getProperty("user.home") + "/.TasklistViewer";
 	
+	private PropertiesHelper helper = new PropertiesHelper();
+	
 	private TasklistTableView tableView;
+	
+	private static final boolean GROOPING_BY_DEFAULT = true;
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -26,11 +31,13 @@ public class TasklistViewer extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		helper.readProperties();
+		
 		VBox root = new VBox();
 		
 		initToolBar(root);
 		
-		tableView = new TasklistTableView(root);
+		tableView = new TasklistTableView(root, GROOPING_BY_DEFAULT);
 		tableView.init();
 		
 		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
@@ -48,7 +55,12 @@ public class TasklistViewer extends Application {
         primaryStage.setY(y);
 	}
 	
-	public void initToolBar(VBox parent) {
+	@Override
+	public void stop() {
+		helper.writeProperties();
+	}
+	
+	private void initToolBar(VBox parent) {
 		ToolBar toolBar = new ToolBar();
 
         Button currentTasks = new Button("Current tasks");
@@ -68,6 +80,11 @@ public class TasklistViewer extends Application {
         toolBar.getItems().add(clear);
         
         parent.getChildren().add(toolBar);
+	}
+	
+	private void initAdditionalControls(VBox parent) {
+		CheckBox groupTasks = new CheckBox("Group tasks");
+		groupTasks.setSelected(GROOPING_BY_DEFAULT);
 	}
 
 }

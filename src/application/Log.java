@@ -10,6 +10,8 @@ import org.apache.log4j.RollingFileAppender;
 
 public class Log {
 	
+	private static final String LOG_PATH = TasklistViewer.APP_DIR_PATH + "/.log";
+	
 	private Log() {}
 	
 	public static final Logger LOGGER = Logger.getLogger(Log.class);
@@ -22,8 +24,7 @@ public class Log {
 		rootLogger.addAppender(new ConsoleAppender(layout));
 
 		try {
-			RollingFileAppender fileAppender = new RollingFileAppender(layout,
-					TasklistViewer.APP_DIR_PATH + "/.log");
+			RollingFileAppender fileAppender = new RollingFileAppender(layout, LOG_PATH);
 			rootLogger.addAppender(fileAppender);
 		} catch (IOException e) {
 			System.err.println("Failed to add appender");

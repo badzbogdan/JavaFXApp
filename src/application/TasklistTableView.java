@@ -3,6 +3,7 @@ package application;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 import data.model.Task;
@@ -28,8 +29,11 @@ public class TasklistTableView {
 	private TaskReader reader = new TaskReader();
 	private final ObservableList<Task> data = FXCollections.observableArrayList(new ArrayList<>());
 	
-	public TasklistTableView(VBox parent) {
+	private boolean grouping;
+	
+	public TasklistTableView(VBox parent, boolean grouping) {
 		this.parent = parent;
+		this.grouping = grouping;
 	}
 	
 	public void init() {
@@ -64,18 +68,28 @@ public class TasklistTableView {
 		parent.getChildren().add(table);
 	}
 	
+	public void applyGrouping() {
+		if (grouping) {
+			
+		}
+	}
+	
 	public void clear() {
 		data.clear();
 	}
 	
 	public void update() {
-		data.clear();
 		try {
-			data.addAll(reader.readTasks());
-			Collections.sort(data);
+			update(reader.readTasks());
 		} catch (IOException e) {
 			Log.LOGGER.error(e.getMessage(), e);
 		}
+	}
+	
+	private void update(Collection<Task> tasks) {
+		data.clear();
+		data.addAll(tasks);
+		Collections.sort(data);
 	}
 	
 }
