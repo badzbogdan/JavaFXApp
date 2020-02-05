@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import data.model.Task;
 import data.util.SizeUnit;
@@ -16,7 +22,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 
 public class TasklistTableView {
 	
@@ -24,14 +30,15 @@ public class TasklistTableView {
 	public static final String PID_COLUMN_TITLE = "PID";
 	public static final String MEM_USAGE_COLUMN_TITLE = "Mem Usage";
 	
-	private VBox parent;
+	private BorderPane parent;
 	
 	private TaskReader reader = new TaskReader();
+	private List<Task> tasks = new ArrayList<>();
 	private final ObservableList<Task> data = FXCollections.observableArrayList(new ArrayList<>());
 	
 	private boolean grouping;
 	
-	public TasklistTableView(VBox parent, boolean grouping) {
+	public TasklistTableView(BorderPane parent, boolean grouping) {
 		this.parent = parent;
 		this.grouping = grouping;
 	}
@@ -65,31 +72,59 @@ public class TasklistTableView {
 		table.setItems(data);
 		table.getColumns().setAll(Arrays.asList(imageNameCol, pidCol, usageMemoryCol));
 		
-		parent.getChildren().add(table);
-	}
-	
-	public void applyGrouping() {
-		if (grouping) {
-			
-		}
+		parent.setCenter(table);
 	}
 	
 	public void clear() {
+		tasks.clear();
 		data.clear();
 	}
 	
 	public void update() {
+		tasks.clear();
 		try {
-			update(reader.readTasks());
+			tasks.addAll(reader.readTasks());
 		} catch (IOException e) {
 			Log.LOGGER.error(e.getMessage(), e);
 		}
+		applyGrouping();
 	}
 	
 	private void update(Collection<Task> tasks) {
 		data.clear();
 		data.addAll(tasks);
 		Collections.sort(data);
+	}
+	
+	public void enableGrouping(boolean val) {
+		grouping = val;
+	}
+	
+	public void applyGrouping() {
+		Collection<Task> preparedTasks = tasks;
+		if (grouping) {
+			preparedTasks = getGroupedTasks();
+		}
+		update(preparedTasks);
+	}
+	
+	private Collection<Task> getGroupedTasks() {
+		Map<Task, Long> duplicateElementCount = tasks.stream().collect(Collectors.groupingBy(
+                Function.identity(), Collectors.counting()));
+		
+		Map<Task, Long> memusageSumDuplicatedElements = tasks.stream().collect(Collectors.groupingBy(
+                Function.identity(), Collectors.mapping(Task::getMemusage, Collectors.reducing(0L, Long::sum))));
+		
+		List<Task> preparedTasks = new ArrayList<>();
+		String namePattern = "%s (%s)";
+		duplicateElementCount.forEach((key, value) -> {
+			String name = (value > 1) ?
+					String.format(namePattern, key.getName(), value) : key.getName();
+			long aggregatedMemusage = memusageSumDuplicatedElements.get(key);
+			preparedTasks.add(new Task(name, key.getPid(), aggregatedMemusage));
+		});
+		
+		return preparedTasks;
 	}
 	
 }

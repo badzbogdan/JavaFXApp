@@ -46,7 +46,6 @@ public class Task implements Comparable<Task> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (memusage ^ (memusage >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
@@ -60,8 +59,6 @@ public class Task implements Comparable<Task> {
 		if (getClass() != obj.getClass())
 			return false;
 		Task other = (Task) obj;
-		if (memusage != other.memusage)
-			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;

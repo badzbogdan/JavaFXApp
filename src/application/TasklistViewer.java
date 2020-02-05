@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToolBar;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -17,8 +17,6 @@ public class TasklistViewer extends Application {
 	private PropertiesHelper helper = new PropertiesHelper();
 	
 	private TasklistTableView tableView;
-	
-	private static final boolean GROOPING_BY_DEFAULT = true;
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -33,12 +31,15 @@ public class TasklistViewer extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		helper.readProperties();
 		
-		VBox root = new VBox();
+		BorderPane root = new BorderPane();
 		
 		initToolBar(root);
 		
-		tableView = new TasklistTableView(root, GROOPING_BY_DEFAULT);
+		boolean grouping = Boolean.parseBoolean(helper.getProperty(PropertiesHelper.GROUPING_KEY));
+		tableView = new TasklistTableView(root, grouping);
 		tableView.init();
+		
+		initAdditionalControls(root);
 		
 		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
 		double width = bounds.getWidth() - bounds.getWidth() * 0.5;
@@ -60,7 +61,7 @@ public class TasklistViewer extends Application {
 		helper.writeProperties();
 	}
 	
-	private void initToolBar(VBox parent) {
+	private void initToolBar(BorderPane parent) {
 		ToolBar toolBar = new ToolBar();
 
         Button currentTasks = new Button("Current tasks");
@@ -79,12 +80,23 @@ public class TasklistViewer extends Application {
         
         toolBar.getItems().add(clear);
         
-        parent.getChildren().add(toolBar);
+        parent.setTop(toolBar);
 	}
 	
-	private void initAdditionalControls(VBox parent) {
+	private void initAdditionalControls(BorderPane parent) {
 		CheckBox groupTasks = new CheckBox("Group tasks");
-		groupTasks.setSelected(GROOPING_BY_DEFAULT);
+		
+		boolean grouping = Boolean.parseBoolean(helper.getProperty(PropertiesHelper.GROUPING_KEY));
+		groupTasks.setSelected(grouping);
+		
+		groupTasks.selectedProperty().addListener(
+				(observableValue, oldVal, newVal) -> {
+					helper.setProperty(PropertiesHelper.GROUPING_KEY, newVal.toString());
+					tableView.enableGrouping(newVal);
+					tableView.applyGrouping();
+				});
+		
+		parent.setBottom(groupTasks);
 	}
 
 }
