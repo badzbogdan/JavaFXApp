@@ -21,7 +21,7 @@ import application.Log;
 import application.TasklistTableView;
 import data.model.Task;
 
-public class TaskReader {
+public class TasklistReader implements ITaskReader {
 	
 	private static final String SYS32_PATH = System.getenv("windir") + "/system32";
 	private static final String CHCP_APP = SYS32_PATH + "/chcp.com";
@@ -32,6 +32,7 @@ public class TaskReader {
 	
 	private static final String KB_SUFFIX = " K";
 	
+	@Override
 	public List<Task> readTasks() throws IOException {
 		String[] commands = {
 			TASKLIST_APP,
@@ -47,6 +48,14 @@ public class TaskReader {
 				new BufferedInputStream(p.getInputStream()), charset);
 		
 		return parse(content);
+	}
+	
+	@Override
+	public void writeTasks(List<Task> tasks) {
+		String message = "Using the system utility \"TaskList\" we can only read";
+		RuntimeException e = new UnsupportedOperationException(message);
+		Log.LOGGER.error(e);
+		throw e;
 	}
 	
 	private Charset getSystemCharset() throws IOException {

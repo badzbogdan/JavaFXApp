@@ -1,9 +1,7 @@
 package application;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +13,6 @@ import java.util.stream.Collectors;
 import data.model.Task;
 import data.util.SizeUnit;
 import data.util.TaskComparator;
-import data.util.TaskReader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableCell;
@@ -32,7 +29,6 @@ public class TasklistTableView {
 	
 	private BorderPane parent;
 	
-	private TaskReader reader = new TaskReader();
 	private List<Task> tasks = new ArrayList<>();
 	private final ObservableList<Task> data = FXCollections.observableArrayList(new ArrayList<>());
 	
@@ -75,22 +71,22 @@ public class TasklistTableView {
 		parent.setCenter(table);
 	}
 	
+	public List<Task> getTasks() {
+		return Collections.unmodifiableList(tasks);
+	}
+	
 	public void clear() {
 		tasks.clear();
 		data.clear();
 	}
 	
-	public void update() {
-		tasks.clear();
-		try {
-			tasks.addAll(reader.readTasks());
-		} catch (IOException e) {
-			Log.LOGGER.error(e.getMessage(), e);
-		}
+	public void update(List<Task> tasks) {
+		this.tasks.clear();
+		this.tasks.addAll(tasks);
 		applyGrouping();
 	}
 	
-	private void update(Collection<Task> tasks) {
+	private void updateData(List<Task> tasks) {
 		data.clear();
 		data.addAll(tasks);
 		Collections.sort(data);
@@ -101,14 +97,14 @@ public class TasklistTableView {
 	}
 	
 	public void applyGrouping() {
-		Collection<Task> preparedTasks = tasks;
+		List<Task> preparedTasks = tasks;
 		if (grouping) {
 			preparedTasks = getGroupedTasks();
 		}
-		update(preparedTasks);
+		updateData(preparedTasks);
 	}
 	
-	private Collection<Task> getGroupedTasks() {
+	private List<Task> getGroupedTasks() {
 		Map<Task, Long> duplicateElementCount = tasks.stream().collect(Collectors.groupingBy(
                 Function.identity(), Collectors.counting()));
 		

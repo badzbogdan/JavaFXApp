@@ -1,12 +1,23 @@
 package application;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import data.model.Task;
+import data.util.FSReader;
+import data.util.TasklistReader;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -20,11 +31,6 @@ public class TasklistViewer extends Application {
 	
 	public static void main(String[] args) {
 		launch(args);
-//		test();
-	}
-	
-	public static void test() {
-		
 	}
 	
 	@Override
@@ -32,7 +38,6 @@ public class TasklistViewer extends Application {
 		helper.readProperties();
 		
 		BorderPane root = new BorderPane();
-		
 		initToolBar(root);
 		
 		boolean grouping = Boolean.parseBoolean(helper.getProperty(PropertiesHelper.GROUPING_KEY));
@@ -66,11 +71,20 @@ public class TasklistViewer extends Application {
 
         Button currentTasks = new Button("Current tasks");
         currentTasks.setOnAction(event -> {
-        	tableView.update();
+        	try {
+				tableView.update(new TasklistReader().readTasks());
+			} catch (IOException e) {
+				Log.LOGGER.error(e);
+			}
             event.consume();
         });
         
         toolBar.getItems().add(currentTasks);
+        toolBar.getItems().add(new Separator());
+        
+        initOpenButton(toolBar);
+        initSaveButton(toolBar);
+        toolBar.getItems().add(new Separator());
 
         Button clear = new Button("Clear");
         clear.setOnAction(event -> {
@@ -81,6 +95,60 @@ public class TasklistViewer extends Application {
         toolBar.getItems().add(clear);
         
         parent.setTop(toolBar);
+	}
+	
+	private void initOpenButton(ToolBar toolBar) {
+		Button open = new Button("Open");
+        open.setOnAction(event -> {
+        	try {
+        		FileChooser fileChooser = prepareFileChooser();
+        		File file = fileChooser.showOpenDialog(toolBar.getScene().getWindow());
+        		if (file != null) {
+        			tableView.update(new FSReader(file).readTasks());
+        		}
+			} catch (IOException e) {
+				Log.LOGGER.error(e);
+			}
+            event.consume();
+        });
+        
+        toolBar.getItems().add(open);
+	}
+	
+	private void initSaveButton(ToolBar toolBar) {
+		Button save = new Button("Save");
+        save.setOnAction(event -> {
+        	List<Task> tasks = tableView.getTasks();
+        	if (tasks.isEmpty()) {
+        		Alert alert = new Alert(AlertType.INFORMATION);
+        		alert.setTitle("Information Dialog");
+        		alert.setHeaderText(null);
+        		alert.setContentText("Tasklist is empty");
+        		alert.showAndWait();
+        		return;
+        	}
+        	
+        	FileChooser fileChooser = prepareFileChooser();
+    		File file = fileChooser.showSaveDialog(toolBar.getScene().getWindow());
+        	try {
+        		if (file != null) {
+        			new FSReader(file).writeTasks(tableView.getTasks());
+        		}
+			} catch (IOException e) {
+				Log.LOGGER.error(e);
+			}
+            event.consume();
+        });
+        
+        toolBar.getItems().add(save);
+	}
+	
+	private FileChooser prepareFileChooser() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Resource File");
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+		fileChooser.getExtensionFilters().add(extFilter);
+		return fileChooser;
 	}
 	
 	private void initAdditionalControls(BorderPane parent) {
