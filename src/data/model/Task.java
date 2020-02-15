@@ -65,6 +65,12 @@ public class Task implements Comparable<Task> {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
+	
+	public static boolean equals(Task task1, Task task2) {
+		return task1 != null && task2 != null
+				&& task1.getName().equalsIgnoreCase(task2.getName())
+				&& task1.getMemusage() == task2.getMemusage();
+	}
 
 	@Override
 	public boolean equals(Object obj) {

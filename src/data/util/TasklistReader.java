@@ -18,7 +18,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.io.IOUtils;
 
 import application.Log;
-import application.TasklistTableView;
+import application.ui.TasklistTableView;
 import data.model.Task;
 
 public class TasklistReader implements ITaskReader {

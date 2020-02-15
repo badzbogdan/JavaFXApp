@@ -10,12 +10,14 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class PropertiesHelper {
+public class PropertieHelper {
 	
-	private static final String PROPERTIES_PATH = TasklistViewer.APP_DIR_PATH + "/.properties";
+	private static final String PROPERTIES_PATH = AppMain.APP_DIR_PATH + "/.properties";
 	
 	public static final String GROUPING_KEY = "grouping";
 	private static final String GROUPING_BY_DEFAULT = "true";
+	
+	public static final String RESOURCES_PATH_KEY = "resources_path";
 	
 	private Properties properties = new Properties();
 	

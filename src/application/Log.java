@@ -10,7 +10,7 @@ import org.apache.log4j.RollingFileAppender;
 
 public class Log {
 	
-	private static final String LOG_PATH = TasklistViewer.APP_DIR_PATH + "/.log";
+	private static final String LOG_PATH = AppMain.APP_DIR_PATH + "/.log";
 	
 	private Log() {}
 	
