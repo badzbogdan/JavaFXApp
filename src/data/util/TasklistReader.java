@@ -3,7 +3,6 @@ package data.util;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.text.NumberFormat;
@@ -18,7 +17,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.io.IOUtils;
 
 import application.Log;
-import application.ui.TasklistTableView;
 import data.model.Task;
 
 public class TasklistReader implements ITaskReader {
@@ -29,6 +27,10 @@ public class TasklistReader implements ITaskReader {
 	
 	private static final String FO_PARAMETER = "/fo";
 	private static final String FO_CSV_ARGUMENT = "csv";
+	
+	private static final int IMAGE_NAME_CSV_ID = 0;
+	private static final int PID_COLUMN_CSV_ID = 1;
+	private static final int MEM_USAGE_CSV_ID = 4;
 	
 	private static final String KB_SUFFIX = " K";
 	
@@ -62,8 +64,8 @@ public class TasklistReader implements ITaskReader {
 		Process p = Runtime.getRuntime().exec(CHCP_APP);
 		String windowsCodePage;
 		String pattern = ".*:"; // skip 'Active code page:' for chcp output
-		try (Reader reader = new InputStreamReader(p.getInputStream())) {
-			windowsCodePage = new Scanner(reader).skip(pattern).next();
+		try (Scanner scanner = new Scanner(new InputStreamReader(p.getInputStream()))) {
+			windowsCodePage = scanner.skip(pattern).next();
 		}
 
 		Charset charset = null;
@@ -82,9 +84,9 @@ public class TasklistReader implements ITaskReader {
 	private List<Task> parse(String content) throws IOException {
 		CSVParser parser = CSVParser.parse(content, CSVFormat.RFC4180.withQuote('"').withHeader());
 		return parser.getRecords().stream().collect(Collectors.mapping(record -> {
-			String imageName = record.get(TasklistTableView.IMAGE_NAME_COLUMN_TITLE);
-			String pid = record.get(TasklistTableView.PID_COLUMN_TITLE);
-			String memUsage = record.get(TasklistTableView.MEM_USAGE_COLUMN_TITLE);
+			String imageName = record.get(IMAGE_NAME_CSV_ID);
+			String pid = record.get(PID_COLUMN_CSV_ID);
+			String memUsage = record.get(MEM_USAGE_CSV_ID);
 			return new Task(imageName, pid, parseMemUsage(memUsage));
 		}, Collectors.toList()));
 	}
