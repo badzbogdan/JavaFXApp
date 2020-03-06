@@ -88,7 +88,7 @@ public class ComparisonDialog {
 		TableColumn<ComparisonInfo, Object> usageMemoryCol = new TableColumn<>(
 				TasklistTableView.MEM_USAGE_COLUMN_TITLE + " (KB)");
 		usageMemoryCol.prefWidthProperty().bind(table.widthProperty().divide(2));
-		usageMemoryCol.setCellValueFactory(new PropertyValueFactory<>("memusage"));
+		usageMemoryCol.setCellValueFactory(new PropertyValueFactory<>("memUsage"));
 		usageMemoryCol.setCellFactory(column -> new CellImpl(table));
 
 		table.getColumns().setAll(Arrays.asList(indexColumn, imageNameCol, usageMemoryCol));

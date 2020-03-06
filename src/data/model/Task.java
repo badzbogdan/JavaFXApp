@@ -24,17 +24,17 @@ public class Task implements Comparable<Task> {
 	 *    Microsoft Documentation/Commands by ServerRole/Tasklist
 	 * </a>
 	 */
-	private long memusage;
+	private long memUsage;
 	
 	@SuppressWarnings("unused")
 	private Task() {
 		/* The empty constructor necessary for JAXB only */
 	}
 
-	public Task(String name, String pid, long memusage) {
+	public Task(String name, String pid, long memUsage) {
 		this.name = name;
 		this.pid = pid;
-		this.memusage = memusage;
+		this.memUsage = memUsage;
 	}
 
 	public String getName() {
@@ -45,8 +45,8 @@ public class Task implements Comparable<Task> {
 		return pid;
 	}
 
-	public long getMemusage() {
-		return memusage;
+	public long getMemUsage() {
+		return memUsage;
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class Task implements Comparable<Task> {
 		return new StringJoiner(", ", "Task [", "]")
 			.add("name=".concat(name))
 			.add("pid=".concat(pid))
-			.add("memusage=".concat(String.valueOf(memusage)))
+			.add("memUsage=".concat(String.valueOf(memUsage)))
 			.toString();
 	}
 	
@@ -69,7 +69,7 @@ public class Task implements Comparable<Task> {
 	public static boolean equals(Task task1, Task task2) {
 		return task1 != null && task2 != null
 				&& task1.getName().equalsIgnoreCase(task2.getName())
-				&& task1.getMemusage() == task2.getMemusage();
+				&& task1.getMemUsage() == task2.getMemUsage();
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class Task implements Comparable<Task> {
 
 	@Override
 	public int compareTo(Task t) {
-		return Long.compare(memusage, t.memusage);
+		return Long.compare(memUsage, t.memUsage);
 	}
 	
 }

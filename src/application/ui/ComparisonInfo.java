@@ -7,7 +7,7 @@ import data.model.Task;
 public class ComparisonInfo {
 	
 	private String name;
-	private String memusage;
+	private String memUsage;
 	
 	private ComparisonStatus status;
 	
@@ -16,12 +16,12 @@ public class ComparisonInfo {
 	}
 	
 	ComparisonInfo(Task task, ComparisonStatus status) {
-		this(task.getName(), Long.toString(task.getMemusage()), status);
+		this(task.getName(), Long.toString(task.getMemUsage()), status);
 	}
 	
-	private ComparisonInfo(String name, String memusage, ComparisonStatus status) {
+	private ComparisonInfo(String name, String memUsage, ComparisonStatus status) {
 		this.name = name;
-		this.memusage = memusage;
+		this.memUsage = memUsage;
 		this.status = status;
 	}
 
@@ -29,8 +29,8 @@ public class ComparisonInfo {
 		return name;
 	}
 	
-	public String getMemusage() {
-		return memusage;
+	public String getMemUsage() {
+		return memUsage;
 	}
 	
 	public ComparisonStatus getStatus() {
@@ -45,7 +45,7 @@ public class ComparisonInfo {
 	public String toString() {
 		return new StringJoiner(", ", "Task [", "]")
 			.add("name=".concat(name))
-			.add("memusage=".concat(memusage))
+			.add("memusage=".concat(memUsage))
 			.add("status=".concat(status.name()))
 			.toString();
 	}

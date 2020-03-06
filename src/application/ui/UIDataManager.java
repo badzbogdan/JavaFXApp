@@ -68,7 +68,7 @@ public class UIDataManager {
                 Function.identity(), Collectors.counting()));
 		
 		Map<Task, Long> memusageSumOfDuplicatedElements = tasks.stream().collect(Collectors.groupingBy(
-                Function.identity(), Collectors.mapping(Task::getMemusage, Collectors.reducing(0L, Long::sum))));
+                Function.identity(), Collectors.mapping(Task::getMemUsage, Collectors.reducing(0L, Long::sum))));
 		
 		List<Task> preparedTasks = new ArrayList<>();
 		String namePattern = "%s (%s)";

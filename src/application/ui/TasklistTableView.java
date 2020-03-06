@@ -38,7 +38,7 @@ public class TasklistTableView {
 		TableColumn<Task, Long> usageMemoryCol = new TableColumn<>(MEM_USAGE_COLUMN_TITLE);
 		usageMemoryCol.prefWidthProperty().bind(table.widthProperty().divide(5));
 		usageMemoryCol.setStyle("-fx-alignment: CENTER-RIGHT;");
-		usageMemoryCol.setCellValueFactory(new PropertyValueFactory<>("memusage"));
+		usageMemoryCol.setCellValueFactory(new PropertyValueFactory<>("memUsage"));
 		usageMemoryCol.setCellFactory(param -> new TableCell<Task, Long>() {
 			@Override
 			public void updateItem(Long item, boolean empty) {

@@ -82,7 +82,7 @@ public class TasklistReader implements ITaskReader {
 	}
 
 	private List<Task> parse(String content) throws IOException {
-		CSVParser parser = CSVParser.parse(content, CSVFormat.RFC4180.withQuote('"').withHeader());
+		CSVParser parser = CSVParser.parse(content, CSVFormat.RFC4180.withHeader());
 		return parser.getRecords().stream().collect(Collectors.mapping(record -> {
 			String imageName = record.get(IMAGE_NAME_CSV_ID);
 			String pid = record.get(PID_COLUMN_CSV_ID);
